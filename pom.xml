@@ -15,10 +15,10 @@
 	<name>customer-portfolio</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>11</java.version>
 		<sonar.projectKey>customer-portfolio</sonar.projectKey>
 		<sonar.organization>zemoso-int</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<java.version>11</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
