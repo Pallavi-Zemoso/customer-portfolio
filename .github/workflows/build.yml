@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - sonarcloud
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -17,6 +18,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+      - name: Setup MySQL
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          mysql database: web_customer_tracker
+          mysql password: Gl0b@ldbpass
+          mysql user: springstudent
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
         with:
