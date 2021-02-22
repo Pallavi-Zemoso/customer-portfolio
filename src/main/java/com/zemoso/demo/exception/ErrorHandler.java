@@ -23,6 +23,7 @@ import javax.validation.ValidationException;
 @ControllerAdvice
 public class ErrorHandler extends ResponseEntityExceptionHandler {
 
+
     @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException exception, HttpHeaders headers,
                                                                    HttpStatus status, WebRequest request) {
