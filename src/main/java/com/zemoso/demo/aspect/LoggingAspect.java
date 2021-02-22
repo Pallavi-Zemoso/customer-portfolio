@@ -1,17 +1,16 @@
 package com.zemoso.demo.aspect;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
-import java.util.logging.Logger;
-
 @Aspect
 @Component
+@Slf4j
 public class LoggingAspect {
-    private static final Logger logger = Logger.getLogger(LoggingAspect.class.getName());
 
     @Pointcut("execution(* com.zemoso.demo.controller.*.*(..))")
     private void forControllerPackage(){}
@@ -40,10 +39,10 @@ public class LoggingAspect {
     @Before("forAppFlow()")
     public void logBeforeAdvice(JoinPoint joinPoint){
         String methodName = joinPoint.getSignature().toShortString();
-        logger.info(" ====>   in @Before Advice: calling method: " + methodName);
+        log.info(" ====>   in @Before Advice: calling method: " + methodName);
 
         for(Object object : joinPoint.getArgs()){
-            logger.info(" ====> Arguments: " + object);
+            log.info(" ====> Arguments: " + object);
         }
     }
 }

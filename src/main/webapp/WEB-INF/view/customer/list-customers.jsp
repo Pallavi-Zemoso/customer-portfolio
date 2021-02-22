@@ -3,8 +3,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <title>List Customers</title>
@@ -70,12 +70,12 @@
                 </tr>
                 <!-- Check if list is empty -->
                 <c:choose>
-                    <c:when test="${empty customerList}">
+                    <c:when test="${empty customerDTOList}">
                        <tr><td colspan="4">No data available</td></tr>
                     </c:when>
                          <c:otherwise>
                              <!-- loop over and print our customers -->
-                             <c:forEach var="tempCustomer" items="${customerList}">
+                             <c:forEach var="tempCustomer" items="${customerDTOList}">
                                  <c:url var="updateLink" value="/customer/${tempCustomer.id}/show-update-form" />
                                  <c:url var="deleteLink" value="/customer/${tempCustomer.id}/delete"/>
                                  <tr>

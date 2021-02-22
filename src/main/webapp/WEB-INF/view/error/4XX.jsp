@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<body>
-4XX Error
-${status}  -  ${error}
-</body>
+    <head>
+        <title>400 series error </title>
+    </head>
+    <body>
+        4XX Error
+        ${status}  -  ${error}
+    </body>
 </html>

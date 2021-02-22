@@ -1,7 +1,9 @@
 package com.zemoso.demo.controller;
 
-import com.zemoso.demo.entity.Customer;
+import com.zemoso.demo.constants.ConstantUtils;
+import com.zemoso.demo.dto.CustomerDTO;
 import com.zemoso.demo.service.CustomerService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -15,7 +17,8 @@ import javax.validation.Valid;
 import java.util.List;
 
 @Controller
-@RequestMapping("/customer")
+@Slf4j
+@RequestMapping(ConstantUtils.CUSTOMER_PATH)
 public class CustomerController {
 
     private final CustomerService customerService;
@@ -27,44 +30,45 @@ public class CustomerController {
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public String getCustomers(Model model){
-        List<Customer> customers = customerService.getCustomers();
-        model.addAttribute("customerList", customers);
+        List<CustomerDTO> customers = customerService.getCustomers();
+        model.addAttribute("customerDTOList", customers);
         return "/customer/list-customers";
     }
 
     @GetMapping("/show-add-form")
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public String showAddForm(Model model){
-        if(!model.containsAttribute("customer")) {
-            model.addAttribute("customer", new Customer());
+        if(!model.containsAttribute(ConstantUtils.CUSTOMER_MODEL_ATTRIBUTE)) {
+            model.addAttribute(ConstantUtils.CUSTOMER_MODEL_ATTRIBUTE, new CustomerDTO());
         }
         return "/customer/customer-form";
     }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
-    public String addCustomer(@Valid @ModelAttribute("customer") Customer customer, BindingResult bindingResult,
+    public String addCustomer(@Valid @ModelAttribute("customerDTO") CustomerDTO customerDTO, BindingResult bindingResult,
                               RedirectAttributes redirectAttributes){
-        if(customer == null) {
+        if(customerDTO == null) {
+            log.debug("Throwing error: CustomerDTO is null");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request");
         }
-        if(!validateCustomer(customer, bindingResult, redirectAttributes)) {
-            return "redirect:/customer/showAddForm";
+        if(!isValidateCustomer(customerDTO, bindingResult, redirectAttributes)) {
+            return ConstantUtils.REDIRECT_ACTION + ConstantUtils.CUSTOMER_PATH + ConstantUtils.CUSTOMER_ADD_FORM_PATH;
         }
-        customerService.addCustomer(customer);
-        System.out.println("Adding customer");
-        return "redirect:/customer";
+        customerService.addCustomer(customerDTO);
+        return ConstantUtils.REDIRECT_ACTION + ConstantUtils.CUSTOMER_PATH;
     }
 
     @GetMapping("/{customerId}/show-update-form")
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public String showUpdateForm(@PathVariable("customerId") int customerId, Model model){
-        if(!model.containsAttribute("customer")) {
-            Customer customer = customerService.getCustomer(customerId);
-            if(customer == null){
+        if(!model.containsAttribute(ConstantUtils.CUSTOMER_MODEL_ATTRIBUTE)) {
+            CustomerDTO customerDTO = customerService.getCustomer(customerId);
+            if(customerDTO == null){
+                log.debug("Throwing error: Customer does not exists");
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No Customer with id " + customerId);
             }
-            model.addAttribute("customer", customer);
+            model.addAttribute(ConstantUtils.CUSTOMER_MODEL_ATTRIBUTE, customerDTO);
         }
         model.addAttribute("todo", "/update");
         return "/customer/customer-form";
@@ -72,26 +76,24 @@ public class CustomerController {
 
     @PostMapping("/update")
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
-    public String updateCustomer(@Valid @ModelAttribute("customer") Customer customer, BindingResult bindingResult,
+    public String updateCustomer(@Valid @ModelAttribute(ConstantUtils.CUSTOMER_MODEL_ATTRIBUTE) CustomerDTO customerDTO, BindingResult bindingResult,
                                  RedirectAttributes redirectAttributes){
-        if(customer == null) {
+        if(customerDTO == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request");
         }
-        if(!validateCustomer(customer, bindingResult, redirectAttributes)) {
+        if(!isValidateCustomer(customerDTO, bindingResult, redirectAttributes)) {
             redirectAttributes.addAttribute("todo", "/update");
-            String redirectUrl = "/customer/" + customer.getId() + "/showUpdateForm";
-            System.out.println(redirectUrl);
-            return "redirect:"+redirectUrl;
+            String redirectUrl = ConstantUtils.CUSTOMER_PATH +  "/" + customerDTO.getId() + ConstantUtils.CUSTOMER_UPDATE_FORM_PATH;
+            return ConstantUtils.REDIRECT_ACTION + redirectUrl;
         }
-        System.out.println("Update Customer");
-        customerService.updateCustomer(customer);
-        return "redirect:/customer";
+        customerService.updateCustomer(customerDTO);
+        return ConstantUtils.REDIRECT_ACTION + ConstantUtils.CUSTOMER_PATH;
     }
 
-    private boolean validateCustomer(Customer customer, BindingResult bindingResult, RedirectAttributes redirectAttributes){
+    private boolean isValidateCustomer(CustomerDTO customerDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes){
         if( bindingResult.hasErrors()){
-            redirectAttributes.addFlashAttribute("customer", customer);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.customer", bindingResult);
+            redirectAttributes.addFlashAttribute(ConstantUtils.CUSTOMER_MODEL_ATTRIBUTE, customerDTO);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.customerDTO", bindingResult);
             return false;
         }
         return true;
@@ -101,7 +103,7 @@ public class CustomerController {
     @PreAuthorize("hasRole('ADMIN')")
     public String delete(@PathVariable("customerId") int customerId){
         customerService.deleteCustomer(customerId);
-        return "redirect:/customer";
+        return ConstantUtils.REDIRECT_ACTION + ConstantUtils.CUSTOMER_PATH;
     }
 
     @GetMapping("/search")
@@ -110,11 +112,10 @@ public class CustomerController {
                                   @RequestParam("formAction") String action,
                                   Model model) {
         if(action.equals("Clear")){
-            return "redirect:/customer";
+            return ConstantUtils.REDIRECT_ACTION + ConstantUtils.CUSTOMER_PATH;
         }
-        List<Customer> customers = customerService.searchCustomerByName(searchString);
-        System.out.println("Search result count: " + customers.size());
-        model.addAttribute("customerList", customers);
+        List<CustomerDTO> customers = customerService.searchCustomerByName(searchString);
+        model.addAttribute("customerDTOList", customers);
         model.addAttribute("searchString", searchString);
         return "/customer/list-customers";
     }

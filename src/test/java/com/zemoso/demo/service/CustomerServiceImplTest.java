@@ -1,6 +1,7 @@
 package com.zemoso.demo.service;
 
 import com.zemoso.demo.dao.CustomerRepository;
+import com.zemoso.demo.dto.CustomerDTO;
 import com.zemoso.demo.entity.Customer;
 import com.zemoso.demo.exception.NoResultFoundException;
 import com.zemoso.demo.service.impl.CustomerServiceImpl;
@@ -39,16 +40,17 @@ public class CustomerServiceImplTest {
                 .thenReturn(emptyCustomerList)
                 .thenReturn(customerListWithData);
 
-        List<Customer> customers = mockCustomerServiceImpl.getCustomers();
-        assertEquals(emptyCustomerList, customers);
+        List<CustomerDTO> customerDTOs = mockCustomerServiceImpl.getCustomers();
+        assertTrue(customerDTOs.isEmpty(), "Empty customer list case failed");
 
-        customers = mockCustomerServiceImpl.getCustomers();
-        assertEquals(customerListWithData, customers);
+        customerDTOs = mockCustomerServiceImpl.getCustomers();
+        assertEquals(customerDTOs.size(), 2, "Valid customer list case failed");
     }
 
     @Test
     public void testGetCustomer(){
         Customer existingCustomer = new Customer(1, "Ram", "Anand", "sample@gmail.com");
+        CustomerDTO existingCustomerDTO = new CustomerDTO(1, "Ram", "Anand", "sample@gmail.com");
         int negativeCustomerId = -3;
         int nonExistingCustomerId = 100;
         int existingCustomerId = existingCustomer.getId();
@@ -59,20 +61,20 @@ public class CustomerServiceImplTest {
 
         Throwable exception = assertThrows(ValidationException.class, ()->
                 mockCustomerServiceImpl.getCustomer(negativeCustomerId));
-        assertEquals(exception.getMessage(), "Customer id cannot be negative", "Negative customer id test case failed");
+        assertEquals( "Customer id cannot be negative", exception.getMessage(),"Negative customer id test case failed");
 
-        Customer resultantCustomer = mockCustomerServiceImpl.getCustomer(nonExistingCustomerId);
-        assertNull(resultantCustomer, "Non-existing customer id case failed");
+        CustomerDTO resultantCustomerDTO = mockCustomerServiceImpl.getCustomer(nonExistingCustomerId);
+        assertNull(resultantCustomerDTO, "Non-existing customer id case failed");
 
-        resultantCustomer = mockCustomerServiceImpl.getCustomer(existingCustomerId);
-        assertEquals(resultantCustomer, existingCustomer, "Valid customer id case failed");
+        resultantCustomerDTO = mockCustomerServiceImpl.getCustomer(existingCustomerId);
+        assertEquals(resultantCustomerDTO, existingCustomerDTO, "Valid customer id case failed");
     }
 
     @Test
     public void testAddCustomer(){
-        Customer customerWithValidData = new Customer("Ram", "Anand", "sample@gmail.com");
+        CustomerDTO customerDTOWithInvalidData = new CustomerDTO(100, "Robert", "Mark", "xyz@gmail.com");
+        CustomerDTO customerDTOWithValidData = new CustomerDTO("Ram", "Anand", "sample@gmail.com");
         Customer customerWithValidDataAfterInsert = new Customer(1, "Ram", "Anand", "sample@gmail.com");
-        Customer customerWithInvalidData = new Customer(100, "Robert", "Mark", "xyz@gmail.com");
 
         ValidationException customerNullException = new ValidationException("New customer cannot be null");
         ValidationException newCustomerWithIdException = new ValidationException("New customer id should not be populated");
@@ -82,23 +84,24 @@ public class CustomerServiceImplTest {
         Throwable exception = assertThrows(ValidationException.class, () -> mockCustomerServiceImpl.addCustomer(null));
         assertEquals(customerNullException.getMessage(), exception.getMessage(),"Null customer case failed");
 
-        exception = assertThrows(ValidationException.class, () -> mockCustomerServiceImpl.addCustomer(customerWithInvalidData));
+        exception = assertThrows(ValidationException.class, () -> mockCustomerServiceImpl.addCustomer(customerDTOWithInvalidData));
         assertEquals(newCustomerWithIdException.getMessage(), exception.getMessage(), "Invalid customer data case failed");
 
-        mockCustomerServiceImpl.addCustomer(customerWithValidData);
+        mockCustomerServiceImpl.addCustomer(customerDTOWithValidData);
         verify(mockCustomerRepository, times(1)).save(nullable(Customer.class));
     }
 
     @Test
     public void testUpdateCustomer(){
+        CustomerDTO customerDTOWithInvalidData = new CustomerDTO(0, "Robert", "Mark", "xyz@gmail.com");
+        CustomerDTO customerDTONotInDB = new CustomerDTO(100, "Robert", "Mark", "xyz@gmail.com");
+        CustomerDTO customerDTOWithValidData = new CustomerDTO(1,"Ram", "Anand", "abc@gmail.com");
         Customer customerWithValidData = new Customer(1,"Ram", "Anand", "abc@gmail.com");
-        Customer customerWithInvalidData = new Customer(0, "Robert", "Mark", "xyz@gmail.com");
-        Customer customerNotInDB = new Customer(100, "Robert", "Mark", "xyz@gmail.com");
 
         ValidationException customerNullException = new ValidationException("Customer cannot be null");
         ValidationException customerWithoutKey = new ValidationException("Customer key is absent");
         NoResultFoundException customerNotFoundException =
-                new NoResultFoundException("Customer with id " + customerNotInDB.getId() + " does not exists");
+                new NoResultFoundException("Customer with id " + customerDTONotInDB.getId() + " does not exists");
         when(mockCustomerRepository.existsById(anyInt()))
                 .thenReturn(false)
                 .thenReturn(true);
@@ -108,13 +111,13 @@ public class CustomerServiceImplTest {
         Throwable exception = assertThrows(ValidationException.class, () -> mockCustomerServiceImpl.updateCustomer(null));
         assertEquals(customerNullException.getMessage(), exception.getMessage(),"Null customer case failed");
 
-        exception = assertThrows(ValidationException.class, () -> mockCustomerServiceImpl.updateCustomer(customerWithInvalidData));
+        exception = assertThrows(ValidationException.class, () -> mockCustomerServiceImpl.updateCustomer(customerDTOWithInvalidData));
         assertEquals(customerWithoutKey.getMessage(), exception.getMessage(), "Customer key absent case failed");
 
-        exception = assertThrows(NoResultFoundException.class, () -> mockCustomerServiceImpl.updateCustomer(customerNotInDB));
+        exception = assertThrows(NoResultFoundException.class, () -> mockCustomerServiceImpl.updateCustomer(customerDTONotInDB));
         assertEquals(customerNotFoundException.getMessage(), exception.getMessage(), "Customer not in db case failed");
 
-        mockCustomerServiceImpl.updateCustomer(customerWithValidData);
+        mockCustomerServiceImpl.updateCustomer(customerDTOWithValidData);
         verify(mockCustomerRepository, times(1)).save(nullable(Customer.class));
     }
 
@@ -151,17 +154,17 @@ public class CustomerServiceImplTest {
                 .thenReturn(emptyCustomerList)
                 .thenReturn(customerListWithData);
 
-        List<Customer> customers = mockCustomerServiceImpl.searchCustomerByName("");
-        assertTrue(customers.isEmpty(), "Blank search string case failed");
+        List<CustomerDTO> customerDTOs = mockCustomerServiceImpl.searchCustomerByName("");
+        assertTrue(customerDTOs.isEmpty(), "Blank search string case failed");
 
-        customers = mockCustomerServiceImpl.searchCustomerByName(null);
-        assertTrue(customers.isEmpty(), "Null search string case failed");
+        customerDTOs = mockCustomerServiceImpl.searchCustomerByName(null);
+        assertTrue(customerDTOs.isEmpty(), "Null search string case failed");
 
-        customers = mockCustomerServiceImpl.searchCustomerByName(searchStringWithoutData);
-        assertTrue(customers.isEmpty(), "No matching data test failed");
+        customerDTOs = mockCustomerServiceImpl.searchCustomerByName(searchStringWithoutData);
+        assertTrue(customerDTOs.isEmpty(), "No matching data test failed");
 
-        customers = mockCustomerServiceImpl.searchCustomerByName(searchStringWithData);
-        assertTrue(!customers.isEmpty() && customers.size() == customerListWithData.size(),
+        customerDTOs = mockCustomerServiceImpl.searchCustomerByName(searchStringWithData);
+        assertTrue(!customerDTOs.isEmpty() && customerDTOs.size() == customerListWithData.size(),
                 "No matching data test failed");
     }
 }

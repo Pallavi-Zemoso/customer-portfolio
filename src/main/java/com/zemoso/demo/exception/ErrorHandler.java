@@ -72,7 +72,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
         return buildErrorResponse(exception, "Unknown error occurred", HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
-    private ResponseEntity<ErrorResponse> processTypeMismatchException(ErrorResponse errorResponse, TypeMismatchException exception) {
+    public ResponseEntity<ErrorResponse> processTypeMismatchException(ErrorResponse errorResponse, TypeMismatchException exception) {
         String errorMessage = TypeMismatchException.ERROR_CODE + " : Failed to convert " + ClassUtils.getDescriptiveType(exception.getValue())
                 + (exception.getRequiredType() == null ? "" : " to required type " + ClassUtils.getQualifiedName(exception.getRequiredType()))
                 + (exception instanceof MethodArgumentTypeMismatchException ?

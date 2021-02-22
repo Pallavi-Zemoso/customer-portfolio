@@ -39,7 +39,7 @@
         <c:if test="${param.error != null}">
                                 <i class="failed"> Invalid username/password </i>
         </c:if>
-		<form:form action="${pageContext.request.contextPath}/customer${todo}" modelAttribute="customer" method="POST">
+		<form:form action="${pageContext.request.contextPath}/customer${todo}" modelAttribute="customerDTO" method="POST">
 		    <form:hidden path="id" />
 			<table>
 				<tbody>
