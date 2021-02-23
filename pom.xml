@@ -18,6 +18,7 @@
 		<sonar.projectKey>customer-portfolio</sonar.projectKey>
 		<sonar.organization>zemoso-int</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../target/jacoco.exec/</sonar.coverage.jacoco.xmlReportPaths>
 		<java.version>11</java.version>
 	</properties>
 	<dependencies>
