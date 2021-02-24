@@ -4,7 +4,8 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
         <title>Maya Company Login Page</title>
 	    <link rel="stylesheet" href="css/style.css" />
@@ -39,15 +40,15 @@
 	</div>
         <h2>Login Page</h2>
         <form:form action="${pageContext.request.contextPath}/authenticate" method="POST">
-            <table>
+            <table role="presentation">
                 <tbody>
                     <tr>
                         <td colspan="2">
                             <c:if test="${param.error != null}">
-                                <i class="failed"> Invalid username/password </i>
+                                <em class="failed"> Invalid username/password </em>
                             </c:if>
                             <c:if test="${param.logout != null}">
-                                <i class="info"> User has been logged out </i>
+                                <em class="info"> User has been logged out </em>
                             </c:if>
                         </td>
                     </tr>
@@ -65,9 +66,6 @@
                     </tr>
                 </tbody>
             </table>
-            <!-- Manual CSRF if we are not using spring form
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-            -->
         </form:form>
     </body>
 </html>

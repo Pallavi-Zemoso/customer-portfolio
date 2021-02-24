@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.sql.DataSource;
 
@@ -20,7 +21,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.jdbcAuthentication().dataSource(securityDataSource);
+        authenticationManagerBuilder.jdbcAuthentication()
+                .dataSource(securityDataSource)
+                .passwordEncoder(new BCryptPasswordEncoder());
     }
 
     @Override
@@ -31,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                      .loginPage("/login")
                      .loginProcessingUrl("/authenticate")
-                     .defaultSuccessUrl("/customer").permitAll()
+                     .defaultSuccessUrl("/customers").permitAll()
                     .and()
                 .logout().permitAll()
                     .and()

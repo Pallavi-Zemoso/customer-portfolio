@@ -4,9 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
 <head>
 	<title>Customer Form</title>
 
@@ -37,11 +35,11 @@
 	<div id="container">
 		<h3>Customer Details</h3>
         <c:if test="${param.error != null}">
-                                <i class="failed"> Invalid username/password </i>
+                                <em class="failed"> Invalid username/password </em>
         </c:if>
-		<form:form action="${pageContext.request.contextPath}/customer${todo}" modelAttribute="customerDTO" method="POST">
+		<form:form action="${pageContext.request.contextPath}/customers${todo}" modelAttribute="customerDTO" method="POST">
 		    <form:hidden path="id" />
-			<table>
+			<table role="presentation">
 				<tbody>
 					<tr>
 						<td><label>First name:</label></td>
@@ -70,7 +68,7 @@
 		<div style="clear; both;"></div>
 		<br>
 		<p>
-			<a href="${pageContext.request.contextPath}/customer">Back to List</a>
+			<a href="${pageContext.request.contextPath}/customers">Back to List</a>
 		</p>
 	</div>
 </body>

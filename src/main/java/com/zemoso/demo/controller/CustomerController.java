@@ -52,7 +52,7 @@ public class CustomerController {
             log.debug("Throwing error: CustomerDTO is null");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request");
         }
-        if(!isValidateCustomer(customerDTO, bindingResult, redirectAttributes)) {
+        if(!isValidCustomer(customerDTO, bindingResult, redirectAttributes)) {
             return ConstantUtils.REDIRECT_ACTION + ConstantUtils.CUSTOMER_PATH + ConstantUtils.CUSTOMER_ADD_FORM_PATH;
         }
         customerService.addCustomer(customerDTO);
@@ -78,10 +78,11 @@ public class CustomerController {
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public String updateCustomer(@Valid @ModelAttribute(ConstantUtils.CUSTOMER_MODEL_ATTRIBUTE) CustomerDTO customerDTO, BindingResult bindingResult,
                                  RedirectAttributes redirectAttributes){
-        if(customerDTO == null) {
+        if(customerDTO == null || customerDTO.getId() == 0) {
+            log.warn("====> No data for update!!!!");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request");
         }
-        if(!isValidateCustomer(customerDTO, bindingResult, redirectAttributes)) {
+        if(!isValidCustomer(customerDTO, bindingResult, redirectAttributes)) {
             redirectAttributes.addAttribute("todo", "/update");
             String redirectUrl = ConstantUtils.CUSTOMER_PATH +  "/" + customerDTO.getId() + ConstantUtils.CUSTOMER_UPDATE_FORM_PATH;
             return ConstantUtils.REDIRECT_ACTION + redirectUrl;
@@ -90,7 +91,7 @@ public class CustomerController {
         return ConstantUtils.REDIRECT_ACTION + ConstantUtils.CUSTOMER_PATH;
     }
 
-    private boolean isValidateCustomer(CustomerDTO customerDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes){
+    private boolean isValidCustomer(CustomerDTO customerDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes){
         if( bindingResult.hasErrors()){
             redirectAttributes.addFlashAttribute(ConstantUtils.CUSTOMER_MODEL_ATTRIBUTE, customerDTO);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.customerDTO", bindingResult);
@@ -108,7 +109,7 @@ public class CustomerController {
 
     @GetMapping("/search")
     @PreAuthorize("isAuthenticated()")
-    public String searchCustomerByName(@RequestParam("searchString") String searchString,
+    public String searchCustomerByName(@RequestParam(name = "searchString", required = false) String searchString,
                                   @RequestParam("formAction") String action,
                                   Model model) {
         if(action.equals("Clear")){

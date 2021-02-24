@@ -36,7 +36,7 @@ public class CustomerRepositoryTest {
     public void testSaveCustomer(){
         Customer customer = new Customer("Ram", "Anand", "sample@gmail.com");
         Customer savedCustomer = entityManager.persistAndFlush(customer);
-        assertNotEquals(savedCustomer.getId(), 0, "Customer save failed");
+        assertNotEquals(0, savedCustomer.getId(), "Customer save failed");
 
         String newEmail ="abcd@gmail.com";
         savedCustomer.setEmail(newEmail);

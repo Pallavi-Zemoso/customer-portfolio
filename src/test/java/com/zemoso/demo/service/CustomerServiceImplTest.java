@@ -44,7 +44,7 @@ public class CustomerServiceImplTest {
         assertTrue(customerDTOs.isEmpty(), "Empty customer list case failed");
 
         customerDTOs = mockCustomerServiceImpl.getCustomers();
-        assertEquals(customerDTOs.size(), 2, "Valid customer list case failed");
+        assertEquals(2, customerDTOs.size(), "Valid customer list case failed");
     }
 
     @Test

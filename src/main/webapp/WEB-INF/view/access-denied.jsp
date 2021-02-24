@@ -5,7 +5,7 @@
     <head>
         <title>Access Denied</title>
 	    <link rel="stylesheet"
-		  href="${pageContext.request.contextPath}/resources/css/style.css" />
+		  href="${pageContext.request.contextPath}/css/style.css" />
     </head>
 
     <body>
@@ -31,7 +31,7 @@
         <h2>Access Denied. You do not authorized to access this page </h2>
         <br>
 		<sec:authorize access="!isAuthenticated()"><a href="${pageContext.request.contextPath}/" >Home Page</a></sec:authorize>
-		<sec:authorize access="isAuthenticated()"><a href="${pageContext.request.contextPath}/customer" >Customer List</a></sec:authorize>
+		<sec:authorize access="isAuthenticated()"><a href="${pageContext.request.contextPath}/customers" >Customer List</a></sec:authorize>
     </div>
     </body>
 </html>

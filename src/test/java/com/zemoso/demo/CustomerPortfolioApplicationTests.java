@@ -8,6 +8,7 @@ class CustomerPortfolioApplicationTests {
 
 	@Test
 	void contextLoads() {
+		//assertThat
 	}
 
 }

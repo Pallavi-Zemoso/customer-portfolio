@@ -37,11 +37,11 @@
 
     <div id="container">
         <div id="content">
-            <table>
+            <table role="presentation">
                 <tbody>
                    <tr>
                       <td>
-                          <form:form action="${pageContext.request.contextPath}/customer/search" method="GET">
+                          <form:form action="${pageContext.request.contextPath}/customers/search" method="GET">
                               Search customer: <input type="text" name="searchString" value=${searchString}></input>
                               <input type="submit" name ="formAction" value="Search" class="my-button" />
                               <input type="submit" name ="formAction" value="Clear" class="my-button" />
@@ -50,7 +50,7 @@
                       <sec:authorize access="hasAnyRole('MANAGER','ADMIN')">
                         <td>
                              <input type="button" value="Add Customer"
-                                    onclick="window.location.href='customer/show-add-form'; return false;"
+                                    onclick="window.location.href='./customers/show-add-form'; return false;"
                                     class="my-button"
                         </td>
                       </sec:authorize>
@@ -58,8 +58,7 @@
                 </tbody>
             </table><br><br>
 
-            <!--  add our html table here -->
-            <table>
+            <table role="presentation">
                 <tr>
                     <th>First Name</th>
                     <th>Last Name</th>
@@ -76,8 +75,8 @@
                          <c:otherwise>
                              <!-- loop over and print our customers -->
                              <c:forEach var="tempCustomer" items="${customerDTOList}">
-                                 <c:url var="updateLink" value="/customer/${tempCustomer.id}/show-update-form" />
-                                 <c:url var="deleteLink" value="/customer/${tempCustomer.id}/delete"/>
+                                 <c:url var="updateLink" value="/customers/${tempCustomer.id}/show-update-form" />
+                                 <c:url var="deleteLink" value="/customers/${tempCustomer.id}/delete"/>
                                  <tr>
                                      <td> ${tempCustomer.firstName} </td>
                                      <td> ${tempCustomer.lastName} </td>

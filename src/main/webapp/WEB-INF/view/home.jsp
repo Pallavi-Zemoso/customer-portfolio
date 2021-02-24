@@ -1,7 +1,8 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
         <title>Maya Company Home Page</title>
 	    <link rel="stylesheet" href="css/style.css" />
@@ -28,7 +29,7 @@
     	<div id="container">
             <p> Welcome to Customer Management Systems Portal !! </p>
             <br>
-            <a href="${pageContext.request.contextPath}/customer">Customer List</a> <sec:authorize access="!isAuthenticated()">(requires login)</sec:authorize>
+            <a href="${pageContext.request.contextPath}/customers">Customer List</a> <sec:authorize access="!isAuthenticated()">(requires login)</sec:authorize>
     	</div>
     </body>
 </html>
